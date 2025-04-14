@@ -30,16 +30,18 @@ require('lazy').setup('plugins', {
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
-vim.opt.foldcolumn = '1'
-vim.opt.foldlevel = 99
-vim.opt.foldlevelstart = 99
-vim.opt.foldenable = true
 vim.opt.cursorline = true
 vim.opt.paste = false
 vim.opt.ignorecase = true
 vim.opt.swapfile = true
 vim.opt.directory = '.'
 vim.opt.laststatus = 3
+
+vim.opt.foldenable = true
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = false  -- Optional: start with folds closed
+vim.opt.foldlevelstart = 99 -- Optional: start with folds open
 
 vim.wo.number = true
 vim.wo.relativenumber = true
