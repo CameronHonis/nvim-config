@@ -75,7 +75,7 @@ return {
             },
         })
 
-        vim.keymap.set('n', '<M-;>', function()
+        vim.keymap.set({ 'n', 'i' }, '<M-;>', function()
             require('codecompanion').toggle()
         end, { desc = 'Toggle CodeCompanion chat window' })
     end,
