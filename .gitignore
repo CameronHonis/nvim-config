@@ -1,3 +1,7 @@
-.git
 .env
+.venv
+.repro
+
 **.swp
+**.swo
+**.log

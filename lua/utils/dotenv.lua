@@ -7,8 +7,8 @@ local M = {}
 ---@return boolean
 M.load_dotenv = function(opts)
     opts = opts or {}
-    file_path = opts.file_path or '.env'
-    verbose = opts.verbose or false
+    local file_path = opts.file_path or '.env'
+
 
     local file = io.open(file_path, "r")
     if not file then return false end
@@ -34,6 +34,10 @@ M.load_dotenv = function(opts)
         ::continue::
     end
     file:close()
+
+    if opts.verbose then
+        print('loaded ' .. file_path)
+    end
     return true
 end
 

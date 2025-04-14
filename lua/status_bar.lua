@@ -1,12 +1,10 @@
--- Eviline config for lualine
--- Author: shadmansaleh
--- Credit: glepnir
+-- Credit: glepnir & shadmansaleh
 local lualine = require('lualine')
 
 -- Color table for highlights
 -- stylua: ignore
 local colors = {
-    bg       = '#151821',
+    bg       = '#202834',
     fg       = '#bbc2cf',
     yellow   = '#ECBE7B',
     cyan     = '#008080',
@@ -32,6 +30,72 @@ local conditions = {
         return gitdir and #gitdir > 0 and #gitdir < #filepath
     end,
 }
+
+-- Update interval in seconds
+local GIT_UPDATE_INTERVAL_SECS = 30
+
+-- Add this near the top of your file, after your colors table
+local git_cache = {
+    ahead = 0,
+    behind = 0,
+    last_update = nil,
+    branch = nil
+}
+
+
+local function update_git_status()
+    if not conditions.check_git_workspace() then
+        return
+    end
+    -- sync from remote
+    vim.fn.system('git fetch --quiet')
+
+    -- get current branch
+    local branch = vim.fn.system('git rev-parse --abbrev-ref HEAD 2>/dev/null'):gsub('\n', '')
+    if vim.v.shell_error ~= 0 then return end
+
+    git_cache.branch = branch
+
+    -- count commits ahead/behind
+    local ahead = vim.fn.system('git rev-list --count origin/' .. branch .. '..' .. branch .. ' 2>/dev/null'):gsub('\n',
+        '')
+    local behind = vim.fn.system('git rev-list --count ' .. branch .. '..origin/' .. branch .. ' 2>/dev/null'):gsub('\n',
+        '')
+
+    if vim.v.shell_error == 0 then
+        git_cache.ahead = tonumber(ahead) or 0
+        git_cache.behind = tonumber(behind) or 0
+    end
+
+    git_cache.last_update = os.time()
+end
+
+local function git_ahead_behind()
+    if not conditions.check_git_workspace() then
+        return ''
+    end
+
+    -- Check if we need to update the cache
+    local current_time = os.time()
+    if current_time - git_cache.last_update > GIT_UPDATE_INTERVAL_SECS then
+        update_git_status()
+    end
+
+    local status = ''
+    if git_cache.ahead > 0 then status = status .. '↑' .. git_cache.ahead .. ' ' end
+    if git_cache.behind > 0 then status = status .. '↓' .. git_cache.behind end
+
+    return status
+end
+
+-- Then add an autocmd to update the git status when needed
+--vim.api.nvim_create_autocmd({ 'BufEnter', 'FocusGained' }, {
+    --pattern = '*',
+    --callback = function()
+        --update_git_status()
+    --end,
+--})
+
 
 -- Config
 local config = {
@@ -78,61 +142,32 @@ local function ins_right(component)
     table.insert(config.sections.lualine_x, component)
 end
 
-ins_left {
-    function()
-        return '▊'
-    end,
-    color = { fg = colors.blue },    -- Sets highlighting of component
-    padding = { left = 0, right = 1 }, -- We don't need space before this
-}
+--ins_left {
+--function()
+--return '▊'
+--end,
+--color = { fg = colors.blue },    -- Sets highlighting of component
+--padding = { left = 0, right = 1 }, -- We don't need space before this
+--}
 
 ins_left {
-    -- mode component
-    function()
-        return ''
-    end,
-    color = function()
-        -- auto change color according to neovims mode
-        local mode_color = {
-            n = colors.red,
-            i = colors.green,
-            v = colors.blue,
-            [''] = colors.blue,
-            V = colors.blue,
-            c = colors.magenta,
-            no = colors.red,
-            s = colors.orange,
-            S = colors.orange,
-            [''] = colors.orange,
-            ic = colors.yellow,
-            R = colors.violet,
-            Rv = colors.violet,
-            cv = colors.red,
-            ce = colors.red,
-            r = colors.cyan,
-            rm = colors.cyan,
-            ['r?'] = colors.cyan,
-            ['!'] = colors.red,
-            t = colors.red,
-        }
-        return { fg = mode_color[vim.fn.mode()] }
-    end,
-    padding = { right = 1 },
+    'diff',
+    -- Is it me or the symbol for modified us really weird
+    symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
+    diff_color = {
+        added = { fg = colors.green },
+        modified = { fg = colors.orange },
+        removed = { fg = colors.red },
+    },
+    cond = conditions.hide_in_width,
 }
 
-ins_left {
-    -- filesize component
-    'filesize',
-    cond = conditions.buffer_not_empty,
-}
 
 ins_left {
     'filename',
     cond = conditions.buffer_not_empty,
     color = { fg = colors.magenta, gui = 'bold' },
 }
-
-ins_left { 'location' }
 
 ins_left { 'progress', color = { fg = colors.fg, gui = 'bold' } }
 
@@ -158,7 +193,7 @@ ins_left {
 ins_left {
     -- Lsp server name .
     function()
-        local msg = 'No Active Lsp'
+        local msg = 'no lsp'
         local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
         local clients = vim.lsp.get_clients()
         if next(clients) == nil then
@@ -172,13 +207,13 @@ ins_left {
         end
         return msg
     end,
-    icon = ' LSP:',
+    icon = ' ',
     color = { fg = '#ffffff', gui = 'bold' },
 }
 
 -- Add components to right sections
 ins_right {
-    'o:encoding',     -- option component same as &encoding in viml
+    'o:encoding',       -- option component same as &encoding in viml
     fmt = string.upper, -- I'm not sure why it's upper case either ;)
     cond = conditions.hide_in_width,
     color = { fg = colors.green, gui = 'bold' },
@@ -193,29 +228,25 @@ ins_right {
 
 ins_right {
     'branch',
-    icon = '',
+    icon = '',
     color = { fg = colors.violet, gui = 'bold' },
 }
 
+-- Then add this to your configuration after your 'branch' component
 ins_right {
-    'diff',
-    -- Is it me or the symbol for modified us really weird
-    symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
-    diff_color = {
-        added = { fg = colors.green },
-        modified = { fg = colors.orange },
-        removed = { fg = colors.red },
-    },
-    cond = conditions.hide_in_width,
+    git_ahead_behind,
+    color = { fg = colors.blue, gui = 'bold' },
+    cond = conditions.check_git_workspace,
 }
 
-ins_right {
-    function()
-        return '▊'
-    end,
-    color = { fg = colors.blue },
-    padding = { left = 1 },
-}
+
+--ins_right {
+--function()
+--return '▊'
+--end,
+--color = { fg = colors.blue },
+--padding = { left = 1 },
+--}
 
 -- Now don't forget to initialize lualine
 lualine.setup(config)
