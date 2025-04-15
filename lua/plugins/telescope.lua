@@ -78,7 +78,7 @@ return {
         end
 
         local function override_live_grep()
-            vim.keymap.set({ 'n', 'i' }, 'rg', search_backlinks, {desc = 'live grep (backlinks)'})
+            vim.keymap.set({ 'n', 'x', 'o' }, 'gr', search_backlinks, { desc = 'live grep (backlinks)' })
         end
 
         -- autocommand that executes action when new buffer is opened
