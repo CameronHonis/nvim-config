@@ -1,4 +1,10 @@
 local DAP_PORT = 8086
+
+-- Instructions
+-- [In DebuggEE Instance] execute user command 'LaunchNvimDebugger'
+-- [In DebuggER Instance] set breakpoints
+-- [In DebuggER Instance] run `require"dap".continue` (probably <M-c> (alt + c))
+-- [In DebuggEE Instance *in separate window*] interact with neovim to trigger breakpoints
 return {
     'jbyuki/one-small-step-for-vimkind',
     version = 'v*',

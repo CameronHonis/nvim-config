@@ -36,6 +36,7 @@ vim.opt.ignorecase = true
 vim.opt.swapfile = true
 vim.opt.directory = '.'
 vim.opt.laststatus = 3
+vim.opt.signcolumn = 'auto:2'
 
 vim.opt.foldenable = true
 vim.opt.foldmethod = "expr"
