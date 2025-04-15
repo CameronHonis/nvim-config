@@ -2,9 +2,10 @@ local OPENROUTER_ADAPTERS = {
     ['gemini 2.5 pro (free)'] = { tag = 'google/gemini-2.5-pro-exp-03-25:free' },
     ['deepseek v3 (free)'] = { tag = 'deepseek/deepseek-chat-v3-0324:free' },
     ['llama 4 scout (free)'] = { tag = 'meta-llama/llama-4-scout:free' },
+    ['gpt 4o mini'] = { tag = 'openai/gpt-4o-mini' },
 }
 
-local DEFAULT_ADAPTER = 'gemini 2.5 pro (free)'
+local DEFAULT_ADAPTER = 'gpt 4o mini'
 
 return {
     'olimorris/codecompanion.nvim',
