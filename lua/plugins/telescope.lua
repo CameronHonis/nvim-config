@@ -63,5 +63,33 @@ return {
         }
         require('telescope').load_extension 'ui-select'
         require('telescope').load_extension 'file_browser'
+
+
+        local function search_backlinks()
+            local search_txt = '[[' .. vim.fn.expand("%:t") .. ']]'
+            require('telescope.builtin').live_grep({
+                default_text = search_txt,
+                prompt_title = "Find Backlinks",
+                initial_mode = 'normal',
+                additional_args = function()
+                    return { "--no-ignore", "--fixed-strings" }
+                end
+            })
+        end
+
+        local function override_live_grep()
+            vim.keymap.set({ 'n', 'i' }, 'rg', search_backlinks, {desc = 'live grep (backlinks)'})
+        end
+
+        -- autocommand that executes action when new buffer is opened
+        vim.api.nvim_create_autocmd('BufReadPost', {
+            callback = function()
+                local file_name = vim.fn.expand("%:t")
+                local is_markdown = file_name:match('.md' .. '$') ~= nil
+                if is_markdown then
+                    override_live_grep()
+                end
+            end,
+        })
     end
 }
