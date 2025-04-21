@@ -6,6 +6,8 @@ local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 local uv = vim.uv or vim.loop
 
 -- Auto-install lazy.nvim if not present
+
+
 if not uv.fs_stat(lazypath) then
     print('Installing lazy.nvim....')
     vim.fn.system({
@@ -49,6 +51,11 @@ vim.wo.relativenumber = true
 
 vim.cmd('hi Normal guibg=NONE ctermbg=NONE')
 
+vim.cmd [[ highlight ColorColumn guibg=#151820 ]]
+vim.opt.colorcolumn = "80" -- Set the desired color column position
+
+-- move me to syntax_colors.lua
+vim.api.nvim_set_hl(0, 'TSMarkupStrong', { bold = true, underline = true, fg = '#FF5733' })
 
 vim.diagnostic.config({
     virtual_text = true,
@@ -98,5 +105,17 @@ vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = 
 -- create debug/run configs
 --
 -- Plugins to try:
--- obsidian.nvim
 -- conform.nvim
+--
+-- Note Taking tools:
+-- 1. `Idea` & `Question`
+--  requires: file (note) name
+--  desc: Creates new note (with boilerplate already added) and adds a link back to the last note, if last buffer contents was a note
+--
+-- 2. `Concept`
+--  requires: file (note) name
+--  desc: Creates a new note (with boilerplate already added). does not create links.
+--
+-- 3. `Questions` & `UnansweredQuestions
+--  desc: Opens questions within three connections of the current note.
+--

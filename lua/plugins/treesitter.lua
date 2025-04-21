@@ -2,6 +2,11 @@ return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
+        vim.api.nvim_create_autocmd('ColorScheme', {
+            callback = function()
+            end
+        })
+
         require("nvim-treesitter.configs").setup({
             ensure_installed = {
                 "bash",
@@ -29,11 +34,9 @@ return {
                 "yaml",
                 "zig",
             },
-            -- Add this section to enable folding
             fold = {
                 enable = true,
             },
-            -- Ensure highlighting is enabled, as it's often required
             highlight = {
                 enable = true,
             },
@@ -42,6 +45,8 @@ return {
             -- matchup = { enable = true },
         })
 
+        vim.api.nvim_set_hl(0, '@markup.strong.markdown_inline', { fg = '#FFAAFF', bold = true })
+
         -- NOTE: You also need to set these global options
         -- Best placed in your main Neovim options file (e.g., options.lua or init.lua)
         -- or an ftplugin
@@ -49,10 +54,5 @@ return {
         -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
         -- vim.opt.foldenable = false -- Optional: start with folds closed
         -- vim.opt.foldlevelstart = 99 -- Optional: start with folds open
-
     end,
-    -- Optional: Specify dependencies if needed
-    -- dependencies = {
-    --   'nvim-treesitter/playground', -- useful for inspecting treesitter queries
-    -- },
 }
