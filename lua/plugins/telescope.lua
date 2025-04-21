@@ -14,6 +14,7 @@ return {
         { 'gr',    mode = { 'n', 'x', 'o' }, require('telescope.builtin').lsp_references,                 desc = 'Go to reference(s)' },
         { 'gi',    mode = { 'n', 'x', 'o' }, require('telescope.builtin').lsp_implementations,            desc = 'Go to implementation(s)' },
         { 'gt',    mode = { 'n', 'x', 'o' }, require('telescope.builtin').lsp_type_definitions,           desc = 'Go to type definition(s)' },
+        { 'gd',    mode = { 'n', 'x', 'o' }, vim.lsp.buf.definition,                                      desc = 'Go to definition' },
     },
     config = function()
         local fb_actions = require 'telescope'.extensions.file_browser.actions
