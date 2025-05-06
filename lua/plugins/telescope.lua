@@ -66,6 +66,33 @@ return {
         require('telescope').load_extension 'file_browser'
 
 
+        local function goto_definition()
+            local function handleResult(_, result, _, _)
+                if not result then
+                    print("No definitions found")
+                    return
+                end
+
+                local items = {}
+                for _, loc in pairs(result) do
+                    local item = {
+                        filename = vim.uri_to_fname(loc.uri),
+                        lnum = loc.range.start.line + 1,
+                        col = loc.range.start.character + 1,
+                    }
+                    table.insert(items, item)
+                end
+
+                require('telescope').select({ results = items, prompt_title = "LSP Definitions" })
+            end
+
+            local params = vim.lsp.util.make_position_params()
+            vim.lsp.buf_request(0, 'textDocument/definition', params, handleResult)
+        end
+
+        vim.keymap.set({ 'n', 'x', 'o' }, 'gd', goto_definition, { desc = 'goto definition' })
+
+
         local function search_backlinks()
             local search_txt = '[[' .. vim.fn.expand("%:t") .. ']]'
             require('telescope.builtin').live_grep({

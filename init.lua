@@ -109,9 +109,16 @@ vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = 
 -- picker for mini.diff source origin (default git index)
 -- create snippets
 -- create debug/run configs
+-- commenting in .md files instead toggles cross-out decoration
+-- FIX: `gr` (at least in .md files) stalls for a second
+-- show file path from project root in status bar
+-- live update of diff in status bar (from buffer not file)
+-- disable auto-insert comment symbol on new line
+--
 --
 -- Plugins to try:
 -- conform.nvim
+-- oil.nvim
 --
 -- Note Taking tools:
 -- 1. `Idea` & `Question`

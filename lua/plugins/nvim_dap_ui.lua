@@ -3,7 +3,7 @@ return {
     version = 'v4.*',
     dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' },
     keys = {
-        { '<M-C-Space>', mode = { 'n', 'i' }, function() require('dapui').toggle() end, desc = 'close debug ui' },
+        { '<M-C-Space>', mode = { 'n', 'i' }, function() pcall(require('dapui').toggle) end, desc = 'close debug ui' },
     },
     config = function()
         local dap = require('dap')
